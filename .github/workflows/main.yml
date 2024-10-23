@@ -1,0 +1,22 @@
+name: Build e Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout código
+        uses: actions/checkout@v2
+      - name: Configurar Maven
+        uses: actions/setup-maven@v2
+      - name: Executar testes
+        run: mvn test
+      - name: Relatório de cobertura
+        uses: actions/upload-artifact@v2
+        with:
+          name: relatorio-cobertura
+          path: target/site/jacoco/index.html
