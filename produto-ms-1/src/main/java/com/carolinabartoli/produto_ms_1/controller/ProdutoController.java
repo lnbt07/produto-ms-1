@@ -36,8 +36,6 @@ public class ProdutoController {
     @PutMapping("/{id}")
     public Produto atualizar(@PathVariable Long id, @RequestBody Produto produto) {
         Produto produtoExistente = service.buscarPorId(id);
-        produtoExistente.setNome(produto.getNome());
-        produtoExistente.setPreco(produto.getPreco());
-        return service.salvar(produtoExistente);
+        return service.atualizar(produtoExistente, produto);
     }
 }
