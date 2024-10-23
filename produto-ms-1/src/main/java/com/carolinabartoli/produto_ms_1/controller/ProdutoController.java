@@ -2,6 +2,7 @@ package com.carolinabartoli.produto_ms_1.controller;
 
 import com.carolinabartoli.produto_ms_1.model.Produto;
 import com.carolinabartoli.produto_ms_1.service.ProdutoService;
+import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,6 +13,8 @@ import java.util.List;
 public class ProdutoController {
     @Autowired
     private ProdutoService service;
+
+    private AmqpTemplate amqpTemplate;
 
     @GetMapping
     public List<Produto> listarTodos() {
@@ -25,7 +28,9 @@ public class ProdutoController {
 
     @PostMapping
     public Produto salvar(@RequestBody Produto produto) {
-        return service.salvar(produto);
+        Produto produtoSalvo = service.salvar(produto);
+        amqpTemplate.convertAndSend("produto-criado", produtoSalvo);
+        return produtoSalvo;
     }
 
     @DeleteMapping("/{id}")
