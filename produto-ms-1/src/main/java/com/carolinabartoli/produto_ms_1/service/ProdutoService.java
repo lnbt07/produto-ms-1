@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 public class ProdutoService {
@@ -26,12 +27,19 @@ public class ProdutoService {
     }
 
     public void excluir(Long id) {
-        repository.deleteById(id);
+        Produto produto = this.buscarPorId(id);
+        if(produto!= null){
+            repository.deleteById(id);
+        }
     }
 
     public Produto atualizar(Produto produtoExistente, Produto produto) {
-        produtoExistente.setNome(produto.getNome());
-        produtoExistente.setPreco(produto.getPreco());
-        return repository.save(produtoExistente);
+        if(produto.getId().equals(produtoExistente.getId())){
+            produtoExistente.setNome(produto.getNome());
+            produtoExistente.setPreco(produto.getPreco());
+            return repository.save(produtoExistente);
+        } else {
+            throw new NoSuchElementException();
+        }
     }
 }
