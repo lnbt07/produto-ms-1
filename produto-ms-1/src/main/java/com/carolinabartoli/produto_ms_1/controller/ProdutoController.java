@@ -6,6 +6,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 // Princípio de Responsabilidade Única (SRP):
@@ -51,5 +52,13 @@ public class ProdutoController {
     public Produto atualizar(@PathVariable Long id, @RequestBody Produto produto) {
         // Delegamos a lógica de negócio para o serviço
         return produtoService.atualizar(id, produto);
+    }
+
+    @GetMapping("/filtrar")
+    public List<Produto> buscarProdutosFiltrados(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String categoria,
+            @RequestParam(required = false) BigDecimal preco) {
+        return produtoService.buscarProdutosFiltrados(nome, categoria, preco);
     }
 }

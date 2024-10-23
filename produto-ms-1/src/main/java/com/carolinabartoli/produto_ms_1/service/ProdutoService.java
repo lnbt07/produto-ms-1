@@ -5,6 +5,7 @@ import com.carolinabartoli.produto_ms_1.repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.NoSuchElementException;
 
@@ -57,6 +58,10 @@ public class ProdutoService {
         } else {
             throw new NoSuchElementException();
         }
+    }
+
+    public List<Produto> buscarProdutosFiltrados(String nome, String categoria, BigDecimal preco) {
+        return repository.buscarProdutosFiltrados(nome, categoria, preco);
     }
 }
 
