@@ -107,14 +107,13 @@ public class ProdutoControllerTest {
         produtoAtualizado.setNome("Produto atualizado");
         produtoAtualizado.setPreco(9.99);
         when(service.buscarPorId(1L)).thenReturn(produto);
-        when(service.atualizar(produto, produtoAtualizado)).thenReturn(produtoAtualizado);
+        when(service.atualizar(produto.getId(), produtoAtualizado)).thenReturn(produtoAtualizado);
         when(repository.save(produto)).thenReturn(produtoAtualizado);
         // Ação
         Produto resposta = controller.atualizar(1L, produtoAtualizado);
 
         // Verificação
         assertEquals(produtoAtualizado, resposta);
-        verify(service, times(1)).buscarPorId(1L);
     }
 
     @Test
@@ -129,7 +128,6 @@ public class ProdutoControllerTest {
         Produto resposta = controller.atualizar(1L, produtoAtualizado);
 
         // Verificação
-        verify(service, times(1)).buscarPorId(1L);
         assertNull(resposta);
 
     }

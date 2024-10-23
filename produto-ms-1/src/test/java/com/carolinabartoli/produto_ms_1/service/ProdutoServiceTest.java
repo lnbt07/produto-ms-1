@@ -24,6 +24,9 @@ public class ProdutoServiceTest {
     @InjectMocks
     private ProdutoService produtoService;
 
+    @Mock
+    private RabbitMQService rabbitMQService;
+
     @BeforeEach
     void init() {
         MockitoAnnotations.initMocks(this);
@@ -49,21 +52,26 @@ public class ProdutoServiceTest {
 
     @Test
     void testCriarProduto() {
-        // cenário
+        // Cenário
         Produto produto = new Produto();
         produto.setPreco(9.99);
         produto.setNome("Teste");
 
-        when(produtoRepository.save(produto)).thenReturn(produto);
+        when(produtoRepository.save(any(Produto.class))).thenReturn(produto);
+        doNothing().when(rabbitMQService).enviarMensagem(any(Produto.class));
 
-        // ação
+        // Ação
         Produto resultado = produtoService.salvar(produto);
 
-        // verificação
+        // Verificação
         assertEquals(produto, resultado);
         assertEquals(produto.getNome(), resultado.getNome());
         assertEquals(produto.getPreco(), resultado.getPreco());
+
+        verify(produtoRepository, times(1)).save(any(Produto.class));
+        verify(rabbitMQService, times(1)).enviarMensagem(any(Produto.class));
     }
+
 
     @Test
     void testExcluirProdutoExistente() {
@@ -107,7 +115,7 @@ public class ProdutoServiceTest {
         produtoNovo.setPreco(9.99);
         when(produtoRepository.findById(id)).thenReturn(Optional.of(produtoExistente));
 
-        produtoService.atualizar(produtoExistente, produtoNovo);
+        produtoService.atualizar(produtoExistente.getId(), produtoNovo);
 
         // Verificação
         verify(produtoRepository, times(1)).save(produtoExistente);
@@ -126,7 +134,7 @@ public class ProdutoServiceTest {
         produtoAntigo.setId(id);
 
         // Ação e Verificação
-        assertThrows(NoSuchElementException.class, () -> produtoService.atualizar(produtoAntigo, produtoNovo));
+        assertThrows(NoSuchElementException.class, () -> produtoService.atualizar(produtoAntigo.getId(), produtoNovo));
     }
 
     @Test

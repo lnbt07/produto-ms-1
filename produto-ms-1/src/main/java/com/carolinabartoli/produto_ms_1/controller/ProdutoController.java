@@ -8,39 +8,48 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+// Princípio de Responsabilidade Única (SRP):
+// Esta classe agora tem apenas a responsabilidade de lidar com requisições HTTP
 @RestController
 @RequestMapping("/api/produtos")
 public class ProdutoController {
-    @Autowired
-    private ProdutoService service;
 
-    private AmqpTemplate amqpTemplate;
+    // Injeção de dependência (DIP):
+    // Removemos a criação direta do serviço e passamos a receber por injeção
+    private final ProdutoService produtoService;
+
+    @Autowired
+    public ProdutoController(ProdutoService produtoService) {
+        this.produtoService = produtoService;
+    }
 
     @GetMapping
     public List<Produto> listarTodos() {
-        return service.listarTodos();
+        // Delegamos a lógica de negócio para o serviço
+        return produtoService.listarTodos();
     }
 
     @GetMapping("/{id}")
     public Produto buscarPorId(@PathVariable Long id) {
-        return service.buscarPorId(id);
+        // Delegamos a lógica de negócio para o serviço
+        return produtoService.buscarPorId(id);
     }
 
     @PostMapping
     public Produto salvar(@RequestBody Produto produto) {
-        Produto produtoSalvo = service.salvar(produto);
-        amqpTemplate.convertAndSend("produto-criado", produtoSalvo);
-        return produtoSalvo;
+        // Delegamos a lógica de negócio para o serviço
+        return produtoService.salvar(produto);
     }
 
     @DeleteMapping("/{id}")
     public void excluir(@PathVariable Long id) {
-        service.excluir(id);
+        // Delegamos a lógica de negócio para o serviço
+        produtoService.excluir(id);
     }
 
     @PutMapping("/{id}")
     public Produto atualizar(@PathVariable Long id, @RequestBody Produto produto) {
-        Produto produtoExistente = service.buscarPorId(id);
-        return service.atualizar(produtoExistente, produto);
+        // Delegamos a lógica de negócio para o serviço
+        return produtoService.atualizar(id, produto);
     }
 }

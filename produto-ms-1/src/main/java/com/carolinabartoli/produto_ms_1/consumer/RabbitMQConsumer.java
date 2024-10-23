@@ -9,6 +9,10 @@ public class RabbitMQConsumer {
 
     @RabbitListener(queues = "produto-criado")
     public void receberMensagem(Produto produto) {
-        System.out.println("Produto criado com sucesso: " + produto);
+        if(produto != null){
+            System.out.println("Produto criado com sucesso: " + produto);
+        } else {
+            throw new NullPointerException();
+        }
     }
 }
